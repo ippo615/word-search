@@ -417,7 +417,8 @@
       listFontSize = (listWidth) / MAX_WORD_SIZE;
       dynamicCss += ID_LIST + ' { ';
       dynamicCss += 'width:' + listWidth + 'px; ';
-      dynamicCss += 'font-size:' + listFontSize + 'px; ';
+      //dynamicCss += 'font-size:' + listFontSize + 'px; ';
+      dynamicCss += 'font-size:1.3em; ';
       dynamicCss += '}\n';
       dynamicCss += '.' + CLASS_WORD + ' { ';
       dynamicCss += 'float: none; ';
@@ -965,7 +966,7 @@
   }
 
   // Creates and returns a new puzzle object.
-  function wspCreatePuzzle(arrayOfWords, width, height, allowedDirections, maxWords) {
+  function wspCreatePuzzle(arrayOfWords, width, height, allowedDirections, maxWords, getNextWord) {
 
     var puzzle = {
       grid: [],
@@ -991,19 +992,20 @@
 
     // Add words to puzzle.
     var wordsAdded = 0;
-    var wordCnt = arrayOfWords.length;
-    var answer;
+    var wordCnt = Math.min(arrayOfWords.length,999);
+    var answer, word;
     for(i = 0; i < wordCnt; i++) {
-      if(arrayOfWords[i] === '') {
+      word = getNextWord(arrayOfWords,i);
+      if(word === '') {
         continue;
       }
       // If we add a word to the puzzle
-      answer = wspPuzzleAddWord(arrayOfWords[i], puzzle, allowedDirections);
+      answer = wspPuzzleAddWord(word, puzzle, allowedDirections);
       if(answer !== null) {
         //console.info(answer);
 
         // Remember the word that it added.
-        puzzle.words[puzzle.words.length] = arrayOfWords[i];
+        puzzle.words[puzzle.words.length] = word;
         puzzle.answers[puzzle.answers.length] = answer;
 
         // Make sure we don't add too many words.
@@ -1174,11 +1176,36 @@
 
   // ----------------------------------------------- [ Section: Url Options ] -
 
+  function nextWord(list){
+    // note changing i here doesn't do anything
+    switch( ORDER ){
+      case "forward":
+        WORD_INDEX += 1;
+        break;
+      case "backward":
+        WORD_INDEX -= 1;
+        break;
+      case "random":
+        WORD_INDEX = Math.floor(RANDOM.random() * list.length);
+        break;
+      case "shuffle":
+        WORD_INDEX += 1;
+        break;
+    }
+    if (WORD_INDEX >= list.length) {
+      WORD_INDEX = 0;
+    }
+    if (WORD_INDEX < 0) {
+      WORD_INDEX = list.length - 1;
+    }
+    return list[WORD_INDEX];
+  }
+
   function uiNewPuzzle() {
     IS_PUZZLE_COUNTED = 0;
     // PUZZLE = wspCreatePuzzle("hello are are are how are you doing today".split(' '), 8, 8, 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128, 10);
-    RANDOM.shuffle(WORD_LIST);
-    PUZZLE = wspCreatePuzzle(WORD_LIST, WIDTH, HEIGHT, DIRECTIONS, MAX);
+
+    PUZZLE = wspCreatePuzzle(WORD_LIST, WIDTH, HEIGHT, DIRECTIONS, MAX, nextWord);
     uiPuzzle.make(PUZZLE);
     uiWordList.make(PUZZLE);
     uiResize();
@@ -1196,6 +1223,10 @@
   function onWordListLoad(data) {
     // Clean and store the word list
     WORD_LIST = data.replace(/["<>(){}\[\]#@&]/g, '').replace(/,/g, ' ').replace(/%20/g, ' ').replace(/\+/g, ' ').split(/ +/g);
+
+    if( ORDER === 'shuffle' ){
+      RANDOM.shuffle(WORD_LIST);
+    }
 
     // Make a new puzzle
     uiNewPuzzle();
@@ -1255,12 +1286,14 @@
   // LIST: a special word list to load
 
   var WORD_LIST = null;
+  var WORD_INDEX = 0;
   var WIDTH = 8;
   var HEIGHT = 8;
   var MAX = WIDTH * HEIGHT;
   var SEED = RANDOM.getSeed();
   var MODE = 'question';
   var DIRECTIONS = 128 | 1 | 2 | 4 | 8 | 16 | 32 | 64;
+  var ORDER = 'random';
 
   // Have to wait until 'onload' for excanvas (ie<9 compatibility)
   $(document).ready(function () {
@@ -1289,6 +1322,9 @@
       if(gUrlParms.seed) {
         SEED = parseInt(gUrlParms.seed, 10);
         RANDOM.setSeed(SEED);
+      }
+      if (gUrlParms.order) {
+        ORDER = gUrlParms.order;
       }
       if(gUrlParms.mode) {
         var mode = gUrlParms.mode.toLowerCase();
@@ -1334,8 +1370,10 @@
       }
     }
 
-    // If we're not supplied with a word list.
-    if(gUrlParms && gUrlParms.words) {
+    // Only use the supplied words if the word list is set to custom
+    var isLoadWords = gUrlParms && gUrlParms.words;
+    var isLoadList = gUrlParms && gUrlParms.list && gUrlParms.list !== 'custom';
+    if( isLoadWords && ! isLoadList ) {
       // Manually start with the words provided
       onWordListLoad(gUrlParms.words);
     } else {
