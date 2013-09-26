@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>Word Search</title>
-	<meta name="description" content="Word Search Game">
+	<meta name="description" content="Word Search">
 	<meta name="author" content="Andrew Ippoliti">
 
 	<!-- The documentation said to put html5shiv AFTER the style tags... -->
@@ -19,7 +19,11 @@
 	<!--<meta name="viewport" content="width=320, height=320, user-scalable=no" />-->
 	
 	<!-- Hide browser chrome (iOS only) -->
-	<meta name="apple-mobile-web-app-capable" content="yes" />	
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+
+	<link rel="icon" type="image/png" href="../favicon" />
+	<link rel="apple-touch-icon-precomposed" href="../apple-touch-icon.png"/>
+
 	<link rel="stylesheet" href="../resources/styles/default.css" />
 
 	<style type="text/css">
@@ -1225,12 +1229,13 @@
     });
   }
 
-  var urlParmStr = DATA.load('url-parm-string', getUrlParmString());
-  var gUrlParms = parseUrlParmString(urlParmStr);
-
-  if(DATA.loadValid('use-custom-url', 0, DATA.int10) !== 1) {
-    gUrlParms = null;
+  var options = getUrlParmString();
+  if( options === '' ){
+    if(DATA.loadValid('use-custom-url', 0, DATA.int10) === 1) {
+      options = DATA.load('url-parm-string', options);
+    }
   }
+  var gUrlParms = parseUrlParmString(options);
 
   // URL PARAMETERS:
   // WORDS: a comma seperated list of words
