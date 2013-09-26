@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html >
+<head>
+	<meta charset="utf-8">
+	<title>Word Game Configurator</title>
+	<meta name="description" content="Word Game Configurator">
+	<meta name="author" content="Andrew Ippoliti">
+
+	<!-- The documentation said to put html5shiv AFTER the style tags... -->
+	<!--[if lt IE 9]>
+	    <script src="../resources/ie/html5shiv.js"></script>
+	    <script src="../resources/ie/excanvas.js"></script>
+	<![endif]-->
+
+	<!-- Mobile viewport optimization http://goo.gl/b9SaQ -->
+	<meta name="HandheldFriendly" content="True">
+	<meta name="MobileOptimized" content="320">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0" />
+	
+	<!-- Hide browser chrome (iOS only) -->
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+
+	<link rel="stylesheet" href="resources/styles/default.css" />
+	<link rel="stylesheet" href="resources/styles/styles.css" />
+
+	<style type="text/css">
+
+	/*
+	.rainbow a:nth-of-type(7n+1) {background: #DFF;}
+	.rainbow a:nth-of-type(7n+2) {background: #DFD;}
+	.rainbow a:nth-of-type(7n+3) {background: #FDD;}
+	.rainbow a:nth-of-type(7n+4) {background: #FFD;}
+	.rainbow a:nth-of-type(7n+5) {background: #FDF;}
+	.rainbow a:nth-of-type(7n+6) {background: #FED;}
+	*/
+
+	</style>
+
+	<style type="text/css" id="dynamic-css"></style>
+
+</head>
+<body>
+	<article>
+	<h1>Word Search Puzzles</h1>
+
+	<div class=''>
+	<div class='large-button ' id='btn-quick-play'>
+		<h2 class='tight'>Quick Play</h2>
+		Play with your last settings.
+	</div>
+
+	<div class='large-button ' id='btn-default-play'>
+		<h2 class='tight'>Default Play</h2>
+		Play with the default settings.
+	</div>
+
+	<div class='large-button ' id='btn-custom-play'>
+		<h2 class='tight'>Custom Play</h2>
+		Play exactly how you want.
+	</div>
+
+	<div class='large-button ' id='btn-records'>
+		<h2 class='tight'>Records</h2>
+		See how well you've done.
+	</div>
+
+	<div class='large-button '  id='btn-about'>
+		<h2 class='tight'>About</h2>
+		Learn about this.
+	</div>
+
+	<div class='large-button ' href='' id='btn-exit'>
+		<h2 class='tight'>Exit</h2>
+		Quit playing.
+	</div>
+
+
+	</div>
+
+	</article>
+
+	<script type="text/javascript" src="resources/lib/jquery.min.js"></script>
+	<script type="text/javascript" src="resources/lib/hammer.min.js"></script>
+	<script type="text/javascript" src="resources/lib/misc.js"></script>
+
+<script type="text/javascript">
+
+// Quick play
+$('#btn-quick-play').hammer().on('tap',function(){
+	window.location.href = 'search/index.html';
+	// DATA.save('use-custom-url',0);
+});
+
+// Default play
+$('#btn-default-play').hammer().on('tap',function(){
+	DATA.save('use-custom-url',0);
+	window.location.href = 'search/index.html';
+});
+
+
+// Customization
+$('#btn-custom-play').hammer().on('tap',function(){
+	window.location.href = 'search/config.html';
+});
+
+// Records
+$('#btn-records').hammer().on('tap',function(){
+	window.location.href = 'search/records.html';
+});
+
+// About
+$('#btn-about').hammer().on('tap',function(){
+	window.location.href = 'search/about.html';
+});
+
+// Exit button
+$('#btn-exit').hammer().on('tap',function(){
+	try {
+		navigator.app.exitApp();
+	}catch(e){
+		history.go(-1);
+		    // to get custom 'back' buttons working...
+		    if( navigator && navigator.app && navigator.app.backHistory ){
+		        navigator.app.backHistory();
+		    }
+	}
+});
+
+</script>
+
+</body>
+</html>

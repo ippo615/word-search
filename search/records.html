@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html >
+<head>
+	<meta charset="utf-8">
+	<title>Word Search Puzzle Configurator</title>
+	<meta name="description" content="Word Search Puzzle Configurator">
+	<meta name="author" content="Andrew Ippoliti">
+
+	<!-- The documentation said to put html5shiv AFTER the style tags... -->
+	<!--[if lt IE 9]>
+	    <script src="../resources/ie/html5shiv.js"></script>
+	    <script src="../resources/ie/excanvas.js"></script>
+	<![endif]-->
+
+	<!-- Mobile viewport optimization http://goo.gl/b9SaQ -->
+	<meta name="HandheldFriendly" content="True">
+	<meta name="MobileOptimized" content="320">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0" />
+	
+	<!-- Hide browser chrome (iOS only) -->
+	<meta name="apple-mobile-web-app-capable" content="yes" />	
+	<link rel="stylesheet" href="../resources/styles/default.css" />
+	<link rel="stylesheet" href="../resources/styles/styles.css" />
+
+	<style type="text/css">
+
+	*, *:before, *:after {
+		-webkit-box-sizing: border-box;
+		-moz-box-sizing: border-box;
+		box-sizing: border-box;
+	}
+
+	body {background-color: #FFF; text-align:center; font-size: 16px; }
+	@media all and (min-width: 640px){
+		body { width: 640px; margin: auto;}
+	}
+
+	p, input, label, select, option, h2, h3, h4, h5, h6 {text-align: left; display: block;}
+
+	article {display: inline-block; text-align: center; padding: 0.7em;}
+
+	button {display: block; width: 100%;}
+
+	</style>
+
+	<style type="text/css" id="dynamic-css"></style>
+
+	<script type="text/javascript" src="../resources/lib/jquery.min.js"></script>
+	<script type="text/javascript" src="../resources/lib/hammer.min.js"></script>
+	<script type="text/javascript" src="../resources/lib/misc.js"></script>
+
+</head>
+<body>
+	<article>
+	<h1>Records</h1>
+
+	<section>
+
+	<div class='large-button left'>
+		<h2 class='tight'>Words found: <span id='total-words'>0</span></h2>
+		How many words you have found in all of the puzzles you played.
+	</div>
+
+	<div class='large-button left'>
+		<h2 class='tight'>Puzzles Solved: <span id='total-puzzles'>0</span></h2>
+		How many puzzles you found every word in.
+	</div>
+
+	<div class='large-button left'>
+		<h2 class='tight'>Hints Recieved: <span id='total-hints'>0</span></h2>
+		How many times you asked for help finding a word.
+	</div>
+
+	<div class='large-button left' id='btn-erase'>
+		<h2 class='tight'>Erase</h2>
+		Delete your records.
+	</div>
+
+	<div class='large-button left' id='btn-exit'>
+		<h2 class='tight'>Back</h2>
+		Go back.
+	</div>
+
+	</article>
+
+<script type="text/javascript">
+
+function showRecords(){
+  $('#total-words').html( DATA.loadValid('total-words-found',0,DATA.int10) );
+  $('#total-puzzles').html( DATA.loadValid('total-puzzles-solved',0,DATA.int10) );
+  $('#total-hints').html( DATA.loadValid('total-hints',0,DATA.int10) );
+}
+showRecords();
+
+// -------------------------------------------------------- [ Module: Erase ] -
+(function ($){
+  $('#btn-erase').hammer().on('tap',function(){
+    if( confirm('Are you sure you want to erase all your records?') ){
+      DATA.save('total-words-found',0);
+      DATA.save('total-puzzles-solved',0);
+      DATA.save('total-hints',0);
+    }
+    showRecords();
+  });
+})($);
+
+// --------------------------------------------------------- [ Module: Back ] -
+(function ($){
+  $('#btn-exit').hammer().on('tap',function(){
+    history.go(-1);
+    // Phonegap fix
+    if( navigator && navigator.app && navigator.app.backHistory ){
+        navigator.app.backHistory();
+    }
+  });
+})($);
+
+</script>
+
+</body>
+</html>

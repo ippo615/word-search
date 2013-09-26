@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+    <widget xmlns = "http://www.w3.org/ns/widgets"
+        xmlns:gap = "http://phonegap.com/ns/1.0"
+        id        = "com.acipo.word-games" 
+        version   = "0.0.1">
+
+    <name>Word games</name>
+
+    <description>
+	A bunch of word games.
+    </description>
+
+    <author href="http://github.com/ippo615/word-games" email="andrewippoliti@gmail.com">
+        Andrew Ippoliti
+    </author>
+
+    <preference name="phonegap-version" value="2.9.0" />
+
+    <!-- No permissions! -->
+    <preference name="permissions" value="none"/>
+
+    <!-- Allow both portriat and landscape views -->
+    <preference name="orientation" value="default"/>
+
+    <!-- Required -->
+    <icon src="icon.png" width="96" height="96" />
+    <!-- Special icons --->
+    <!--
+    <icon src="icons/icon-36.png" width="36" height="36" gap:platform="android" gap:density="ldpi" />
+    <icon src="icons/icon-48.png" width="48" height="48" gap:platform="android" gap:density="mdpi" />
+    <icon src="icons/icon-72.png" width="72" height="72" gap:platform="android" gap:density="hdpi" />
+    <icon src="icons/icon-96.png" width="96" height="96" gap:platform="android" gap:density="xhdpi" />
+    <icon src="icons/icon-64.png" width="64" height="64" gap:platform="webos" />
+    <icon src="icons/icon-48.png" width="48" height="48" gap:platform="winphone" />
+    -->
+</widget>
