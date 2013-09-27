@@ -2,7 +2,7 @@
     <widget xmlns = "http://www.w3.org/ns/widgets"
         xmlns:gap = "http://phonegap.com/ns/1.0"
         id        = "com.acipo.word-search" 
-        version   = "0.0.1">
+        version   = "1.0.0">
 
     <name>Word Search Puzzles</name>
 
@@ -21,6 +21,11 @@
 
     <!-- Allow both portriat and landscape views -->
     <preference name="orientation" value="default"/>
+
+    <!-- Tell android we can work with old stuff (android 2.1) -->
+    <preference name="android-minSdkVersion" value="7" />
+    <!-- but were also designed for tablets (4.0) -->
+    <preference name="android-targetSdkVersion" value="14" />
 
     <!-- Required -->
     <icon src="icon.png" width="96" height="96" />

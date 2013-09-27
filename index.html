@@ -117,6 +117,15 @@ $('#btn-exit').hammer().on('tap',function(){
 	}
 });
 
+// Try hiding the splashscreen in phonegap app
+try {
+  document.addEventListener("deviceready", function(){
+    try{
+      navigator.splashscreen.hide();
+    }catch(notPhoneGap2){}
+  }, false);
+}catch(notPhoneGap1){}
+
 </script>
 
 </body>
