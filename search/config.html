@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html >
+<head>
+	<meta charset="utf-8">
+	<title>Word Search Puzzle Customizer</title>
+	<meta name="description" content="Word Search Puzzle Customizer">
+	<meta name="author" content="Andrew Ippoliti">
+
+	<!-- The documentation said to put html5shiv AFTER the style tags... -->
+	<!--[if lt IE 9]>
+	    <script src="../resources/ie/html5shiv.js"></script>
+	    <script src="../resources/ie/excanvas.js"></script>
+	<![endif]-->
+
+	<!-- Mobile viewport optimization http://goo.gl/b9SaQ -->
+	<meta name="HandheldFriendly" content="True">
+	<meta name="MobileOptimized" content="320">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0" />
+	
+	<!-- Hide browser chrome (iOS only) -->
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+
+	<link rel="icon" type="image/png" href="../favicon" />
+	<link rel="apple-touch-icon-precomposed" href="../apple-touch-icon.png"/>
+
+	<link rel="stylesheet" href="../resources/styles/default.css" />
+	<link rel="stylesheet" href="../resources/styles/styles.css" />
+
+	<style type="text/css">
+
+	*, *:before, *:after {
+		-webkit-box-sizing: border-box;
+		-moz-box-sizing: border-box;
+		box-sizing: border-box;
+	}
+
+	body {background-color: #FFF; text-align:center; font-size: 18px; }
+	@media all and (min-width: 640px){
+		body { width: 640px; margin: auto;}
+	}
+
+	canvas {border: 1px solid #000; display:inline-block; margin: 20px;}
+
+	textarea {width: 100%; height: 5em; font-size: 70%;}
+
+	img {display:none;}
+
+	label {display: block; padding-top: 12px;}
+
+	input {display: block;}
+
+	table {text-align: center; display:inline-block;}
+	p, input, label, select, option, h2, h3, h4, h5, h6 {text-align: left; display: block;}
+
+	article {display: inline-block; text-align: center; padding: 1em;}
+
+	button {display: block; width: 100%;}
+
+	section { margin: 10px; padding: 0 10px 10px 10px; display:block; vertical-align: top; }
+
+
+	.input-line {}
+	.input-line .primary { width: 80%; float: left;	}
+	.input-line .secondary { width: 20%; float: left; }
+
+	select { width: 100%; }
+
+	.checkline { position: relative; padding: 0 0 0.3em 0; width: 10em; float: left; height: 1em; }
+	.checkbox {position:absolute; display: block; left: 0; width: 1em; height: 1em;}
+	.checklabel {padding: 0; position: absolute; left:1.2em; right:0;}
+
+	ul { margin: 0; padding: 8px 0; list-style-type: none; border: none; border-radius: 16px; }
+	li { list-style-type: none; display: block; float: left; border-bottom: 2px solid #AAA; margin: 0 1%; width: 7em; }
+
+	.tip { display: none; }
+
+	</style>
+
+	<style type="text/css" id="dynamic-css"></style>
+
+	<script type="text/javascript" src="../resources/lib/jquery.min.js"></script>
+	<script type="text/javascript" src="../resources/lib/hammer.min.js"></script>
+	<script type="text/javascript" src="../resources/lib/misc.js"></script>
+
+</head>
+<body>
+	<article>
+	<h1>Word Game Customizer!</h1>
+
+	<p >Making custom word games is painless, don't be afraid to try! If you want to show
+	or hide the help click the button below:</p>
+
+	<div class='large-button left' id='btn-help'>
+		<h2 class='tight'>Toggle Help</h2>
+		Show or hide the help text
+	</div>
+
+	<div class='large-button left' id='btn-play-top'>
+		<h2 class='tight'>Play!</h2>
+		Start the game with your custom settings
+	</div>
+
+	<div class='large-button left' id='btn-reset-top'>
+		<h2 class='tight'>Reset</h2>
+		Reset the options to the defualt values
+	</div>
+
+	<section>
+	<h2>Word Search Puzzle Options</h2>
+
+	<label for='input-width'>Number of letters in a row:</label>
+	<div class='tip'>
+	<p>This is the 'width' of the puzzle (in letters).</p>
+	</div>
+	<input type='number' id='input-width' placeholder='8' />
+
+	<label for='input-height'>Number of letters in a column:</label>
+	<div class='tip'>
+	<p>This is the 'height' of the puzzle (in letters).</p>
+	</div>
+	<input type='number' id='input-height' placeholder='8' />
+
+	<label for='select-mode'>Game Mode:</label>
+	<div class='tip'>
+	<p>The default mode is <b>Questions</b>. By using <b>Answers</b> mode you
+	can have the answer highlighted for you by clicking the word.</p>
+	</div>
+	<select id='select-mode'>
+		<option >Questions</option>
+		<option >Answers</option>
+	</select>
+
+	<label for='input-seed'>Random seed for the puzzle:</label>
+	<div class='tip'>
+	<p>By setting the random seed you can ensure that everyone sees the
+	same puzzle. You will see a different arrangement of the words with
+	a different seed.</p>
+	</div>
+	<input type='number' id='input-seed' placeholder='0' />
+
+	<label>Word Directions:</label>
+	<div class='tip'>
+		<p><b>North</b> the word starts at the bottom and ends at the top</p>
+		<p><b>South</b> the word starts at the top and ends at the bottom</p>
+		<p><b>East</b> the word starts at the left and ends on the right</p>
+		<p><b>West</b> the word starts at the right and ends on the left</p>
+	</div>
+	<div class='checkline'>
+		<input type="checkbox" id="in-north" value="north" class="checkbox" />
+		<label for="in-north" id="in-north-label" class='checklabel' >North (up)</label>
+	</div>
+	<div class='checkline'>
+		<input type="checkbox" id="in-south" value="south" class="checkbox" />
+		<label for="in-south" id="in-south-label" class='checklabel' >South (down)</label>
+	</div>
+	<div class='checkline'>
+		<input type="checkbox" id="in-east" value="east" class="checkbox" />
+		<label for="in-east" id="in-east-label" class='checklabel' >East (right)</label>
+	</div>
+	<div class='checkline'>
+		<input type="checkbox" id="in-west" value="west" class="checkbox" />
+		<label for="in-west" id="in-west-label" class='checklabel' >West (left)</label>
+	</div>
+	<div class='checkline'>
+		<input type="checkbox" id="in-north-east" value="north-east" class="checkbox" />
+		<label for="in-north-east" id="in-north-east-label" class='checklabel' >North East</label>
+	</div>
+	<div class='checkline'>
+		<input type="checkbox" id="in-north-west" value="north-west" class="checkbox" />
+		<label for="in-north-west" id="in-north-west-label" class='checklabel' >North West</label>
+	</div>
+	<div class='checkline'>
+		<input type="checkbox" id="in-south-east" value="south-east" class="checkbox" />
+		<label for="in-south-east" id="in-south-east-label" class='checklabel' >South East</label>
+	</div>
+	<div class='checkline'>
+		<input type="checkbox" id="in-south-west" value="south-west" class="checkbox" />
+		<label for="in-south-west" id="in-south-west-label" class='checklabel' >South West</label>
+	</div>
+
+	<br/><br/>
+
+	</section>
+
+	<section>
+	<h2>Custom Word Lists</h2>
+
+	<label for='input-index'>Staring Index:</label>
+	<div class='tip'>
+	<p>The starting index is used to determine where the list should begin.
+	Your list may be: dog, cat, elk. A starting index of 0 starts the game with 'dog'
+	while a starting index of 1 starts with 'cat'. This is useful if you have a HUGE
+	list of words (so you can stop and resume your game later).</p>
+	</div>
+	<input type='number' id='input-index' placeholder='0' />
+
+	<label for='select-order'>Order in which words are used:</label>
+	<div class='tip'>
+	<p>For the following examples consider a list of: cat, dog, elf, frog, gnome.</p>
+	<p><b>Shuffle</b> randomly orders all of the words and then follows that order,
+	you may get: elf, gnome, frog, dog, cat</p>
+	<p><b>Random</b> picks a random word from the list everytime: dog, dog, dog, 
+	cat, elf</p>
+	<p><b>Forward</b> follows the list in the order supplied: cat, dog, elf, frog,
+	gnome</p>
+	<p><b>Backward</b> follows the list in the reverse of the order supplied:
+	gnome, frog, elf, dog, cat.</p></div>
+	<select id='select-order'>
+		<option value='random'>Random</option>
+		<option value='shuffle'>Shuffle</option>
+		<option value='forward'>Forward</option>
+		<option value='backward'>Backward</option>
+	</select>
+
+	<label for='select-list'>Word List:</label>
+	<div class='tip'>
+	<p><b>Custom</b> uses the words that you specify below</p>
+	<p><b>Default</b> uses the default list of English words</p>
+	<p><b>Commonly Misspelled Words</b> are commonly misspelled</p>
+	<p><b>Official Crossword List</b> is some official crossword source</p>
+	<p><b>Words in the US Constitution</b> if it wasn't in the constitution
+	it won't be in here</p>
+	<p><b>Places</b> should be on a map somewhere</p>
+	<p><b>Male names</b> are names for men</p>
+	<p><b>Female names</b> are names for women</p>
+	</div>
+	<select id='select-list'>
+		<option value=''>Custom</option>
+		<option value='english'>Many English Words</option>
+		<option value='misspelled'>Commonly Misspelled Words</option>
+		<option value='crossword'>Official Crossword List</option>
+		<option value='constitution'>Words in the US Constitution</option>
+		<option value='places'>Places</option>
+		<option value='names_male'>Male Names</option>
+		<option value='names_female'>Female Names</option>
+	</select>
+
+	<label for='text-new-word'>Enter Custom Word List: (click a word to delete it)</label>
+	<div class='tip'>
+	<p>You can type multiple words separated by a space on the line below. Then click
+	the 'Add' button or press the enter key to add them to your word list. You should
+	see the words you added below. To remove a word from the list - just click on it.</p>
+	</div>
+	<div class='input-line'>
+		<input class='primary' id='text-new-word' class='word' type='text' placeholder='Enter a new word' />
+		<button class='secondary' id='btn-add-new-word'>Add</button>
+		<br style="clear:both;"/>
+	</div>
+
+	<ul id='word-list'>
+		<br style="clear:both;"/>
+	</ul>
+	</section>
+
+	<a class='large-button left' id='btn-share-bottom' href='#'>
+		<h2 class='tight'>Share!</h2>
+		Challenge your friends.
+	</a>
+
+	<div class='large-button left' id='btn-play-bottom'>
+		<h2 class='tight'>Play!</h2>
+		Start the game with your custom settings.
+	</div>
+	<div class='large-button left' id='btn-exit'>
+		<h2 class='tight'>Back</h2>
+		Go back.
+	</div>
+
+	</article>
+
+<script type="text/javascript">
+
+// Generates the links and updates the output based on user input
+function makeOutput() {
+  // Get the list of custom words
+  var words = '';
+  $('#word-list').find('li').each(function (i, li) {
+    words += li.innerHTML;
+    words += '+';
+  });
+  words = words.slice(0, words.length - 1); // take off last space
+
+  // Get the easy form values
+  var index = $('#in-index').val();
+  var order = $('#select-order').val().toLowerCase();
+  var list = $('#select-list').val().toLowerCase();
+  var width = $('#input-width').val();
+  var height = $('#input-height').val();
+  var seed = $('#input-seed').val();
+  var mode = $('#select-mode').val().toLowerCase();
+  
+  // If all directions are allowed use 'ALL' (not N+S+E+W+...)
+  var N = $('#in-north').is(':checked');
+  var S = $('#in-south').is(':checked');
+  var E = $('#in-east').is(':checked');
+  var W = $('#in-west').is(':checked');
+  var NE = $('#in-north-east').is(':checked');
+  var NW = $('#in-north-west').is(':checked');
+  var SE = $('#in-south-east').is(':checked');
+  var SW = $('#in-south-west').is(':checked');
+  var ALL = N && S && E && W && NE && NW && SE && SW;
+  var dirs = '';
+  if (ALL) {
+    dirs = 'all';
+  } else {
+    dirs += N ? 'N+' : '';
+    dirs += S ? 'S+' : '';
+    dirs += E ? 'E+' : '';
+    dirs += W ? 'W+' : '';
+    dirs += NE ? 'NE+' : '';
+    dirs += NW ? 'NW+' : '';
+    dirs += SE ? 'SE+' : '';
+    dirs += SW ? 'SW+' : '';
+  }
+  if (dirs.charAt(dirs.length - 1) === '+') {
+    dirs = dirs.slice(0, dirs.length - 1);
+  }
+
+  // Generate the parameter string
+  var parmString = '';
+  var options = [];
+  if (order) {
+    options.push('order=' + order);
+  }
+  if (index) {
+    options.push('index=' + index);
+  }
+  if (list) {
+    options.push('list=' + list);
+  }
+  if (width) {
+    options.push('width=' + width);
+  }
+  if (height) {
+    options.push('height=' + height);
+  }
+  if (mode) {
+    options.push('mode=' + mode);
+  }
+  if (seed) {
+    options.push('seed=' + seed);
+  }
+  if (dirs) {
+    options.push('dirs=' + dirs);
+  }
+  if (words) {
+    options.push('words=' + words);
+  }
+  parmString += options.join('&');
+
+  // Save the data - so it can be retrieved when the puzzle page loads
+  DATA.save('url-parm-string', parmString);
+
+  return parmString;
+}
+
+// --------------------------------------------------- [ Module: Form Reset ] -
+(function ($) {
+  function resetForm() {
+    $('input').not('[type=checkbox]').not('[type=radio]').val('');
+    $('select').removeAttr('selected');
+    $('input[type=checkbox]').removeAttr('checked');
+    $('#word-list').html('');
+  }
+  $('#btn-reset-top').hammer().on('tap', resetForm);
+})($);
+
+// -------------------------------------------------- [ Module: Goto Puzzle ] -
+// Goes to the puzzle when appropriate button are clicked
+(function ($) {
+  function gotoPuzzle() {
+    makeOutput();
+    DATA.save('use-custom-url', 1);
+    window.location.href = 'index.html';
+  }
+  $('#btn-play-bottom').hammer().on('tap', gotoPuzzle);
+  $('#btn-play-top').hammer().on('tap', gotoPuzzle);
+})($);
+
+// ---------------------------------------------------- [ Module: Word List ] -
+(function ($) {
+
+  // Adds input words (separated by space(s)) to the list of words
+  function addWords() {
+    var words = this.value
+        .replace(/["<>(){}\[\]#@&]/g, '')
+        .replace(/[,;]/g,' ')
+        .split(/\s+/);
+    var word, i, l = words.length;
+    for (i = 0; i < l; i += 1) {
+      word = words[i];
+      if( word === '' ){
+        continue;
+      }
+      $('<li>' + word + '</li>').insertBefore(
+      $('#word-list').find('br')[0]);
+    }
+    this.value = '';
+  }
+
+  // If enter is pressed, add the words and update the output
+  $('#text-new-word').on('keydown', function (ev) {
+    if (ev.which === 13) {
+      addWords.call(this);
+      makeOutput();
+    }
+  });
+
+  // Add the words and update the output when the 'add' button is clicked
+  $('#btn-add-new-word').hammer().on('tap', function (ev) {
+    addWords.call($('#text-new-word')[0]);
+    makeOutput();
+  });
+
+  // Remove words when they are clicked
+  $('#word-list').hammer().on('tap', 'li', function (ev) {
+    $(this).fadeOut(function () {
+      $(this).remove();
+    });
+  });
+})($);
+
+// ---------------------------------------------------- [ Module: Help Info ] -
+(function ($) {
+  var isHelping = 0;
+  $('#btn-help').hammer().on('tap', function (ev) {
+    // All help text is stored div's with class='tip' (are hidden by default)
+    var $css = $('#dynamic-css');
+    if (isHelping) {
+      $css.styleSheet('');
+      isHelping = 0;
+    } else {
+      // We use a dynamic stylesheet to:
+      //  - display 'tip' divs
+      //  - underline the lables
+      //  - indent the paragraphs
+      $css.styleSheet('.tip {display: block} label {text-decoration: underline; padding-top: 1.2em;} p {margin: 0.2em 0.5em;}');
+      isHelping = 1;
+    }
+  });
+})($);
+
+// -------------------------------------------------- [ Module: Auto Update ] -
+(function ($) {
+  $('input,select').on('change blur', makeOutput);
+})($);
+
+// --------------------------------------------------------- [ Module: Back ] -
+(function ($){
+  $('#btn-exit').hammer().on('tap',function(){
+    history.go(-1);
+    // Phonegap fix
+    if( navigator && navigator.app && navigator.app.backHistory ){
+        navigator.app.backHistory();
+    }
+  });
+})($);
+
+// -------------------------------------------------------- [ Module: Share ] -
+(function ($){
+  // NOTE: this MUST be registered on the 'click' event of a link.
+  // We change the href to a 'mailto:' url. We cannot use window.open
+  // because it is too unreliable (popup blockers); however, using the
+  // anchor's href seems to be pretty effective.
+  $('#btn-share-bottom').on('click',function(ev){
+    //ev.preventDefault();
+    var urlParms = makeOutput();
+    var emailBody = '';
+    emailBody += 'Hey,\n';
+    emailBody += '\n';
+    emailBody += 'I though you would enjoy this game:\n';
+    emailBody += '\n';
+    emailBody += 'http://ippo615.github.io/word-search/search/index.html?';
+    emailBody += urlParms;
+    emailBody += '\n\n';
+    emailBody += 'You can also get it in the app store:\n\n';
+    emailBody += 'https://play.google.com/store/apps/details?id=com.acipo.word_search';
+    emailBody += '\n\n';
+    emailBody += 'Enjoy!';
+    var mailTo = '';
+    mailTo += 'mailto:';
+    mailTo += '?to=';
+    mailTo += '&subject='+encodeURIComponent('Try this game!');
+    mailTo += '&body='+encodeURIComponent(emailBody);
+    // This must be registered on an anchor tag to word
+    this.href = mailTo;
+  });
+})($);
+
+// SOMETHING IMPORTANT TO NOTE:
+// http://code.google.com/p/android/issues/detail?id=17535
+// Basically, in Android 3/4 +phonegap using url parameters does not work, ex:
+// http://page.com/index.html -> ok
+// http://page.com/index.html?parm=something -> fail
+// So - save your parametes to a cookie/localstorage and then read/load it
+
+</script>
+
+</body>
+</html>

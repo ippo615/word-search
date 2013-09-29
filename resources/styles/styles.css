@@ -1,0 +1,16 @@
+*, *:before, *:after {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+body { background-color: #FFF; color: #000; text-align:center; font-size: 18px; }
+
+@media all and (min-width: 480px){
+	body { width: 480px; margin: auto;}
+}
+
+.large-button {display: block; padding: 1em; margin: 0; text-decoration: none; color: #000; border-bottom: 2px solid #BBB;cursor: pointer;}
+.large-button:hover {background: #EEE;}
+.tight {padding: 0; margin: 0;}
+.left {text-align: left;}

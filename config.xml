@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+    <widget xmlns = "http://www.w3.org/ns/widgets"
+        xmlns:gap = "http://phonegap.com/ns/1.0"
+        id        = "com.acipo.word-search" 
+        version   = "1.0.0">
+
+    <name>Word Search Puzzles</name>
+
+    <description>
+	Find the words hidden in the letter matrix.
+    </description>
+
+    <author href="http://github.com/ippo615/word-search" email="andrewippoliti@gmail.com">
+        Andrew Ippoliti
+    </author>
+
+    <preference name="phonegap-version" value="2.9.0" />
+
+    <!-- No permissions! -->
+    <preference name="permissions" value="none"/>
+
+    <!-- Allow both portriat and landscape views -->
+    <preference name="orientation" value="default"/>
+
+    <!-- Tell android we can work with old stuff (android 2.1) -->
+    <preference name="android-minSdkVersion" value="7" />
+    <!-- but were also designed for tablets (4.0) -->
+    <preference name="android-targetSdkVersion" value="14" />
+
+    <!-- Required -->
+    <icon src="icon.png" width="96" height="96" />
+
+    <!-- Special icons --->
+    <icon src="resources/icon/icon-144.png" gap:platform="ios" />
+    <icon src="resources/icon/icon-96.png" gap:platform="android" gap:density="xhdpi" />
+    <icon src="resources/icon/icon-48.png" gap:platform="blackberry" />
+    <icon src="resources/icon/icon-48.png" gap:platform="winphone" />
+
+    <!-- Splash Screen - should change it -->
+    <gap:splash src="resources/splash/splash.png" gap:platform="android" gap:density="xhdpi" />
+
+    <!--
+    <icon src="icons/icon-36.png" width="36" height="36" gap:platform="android" gap:density="ldpi" />
+    <icon src="icons/icon-48.png" width="48" height="48" gap:platform="android" gap:density="mdpi" />
+    <icon src="icons/icon-72.png" width="72" height="72" gap:platform="android" gap:density="hdpi" />
+    <icon src="icons/icon-96.png" width="96" height="96" gap:platform="android" gap:density="xhdpi" />
+    <icon src="icons/icon-64.png" width="64" height="64" gap:platform="webos" />
+    <icon src="icons/icon-48.png" width="48" height="48" gap:platform="winphone" />
+    -->
+</widget>
