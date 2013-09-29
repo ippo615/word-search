@@ -252,9 +252,14 @@
 	</ul>
 	</section>
 
+	<a class='large-button left' id='btn-share-bottom' href='#'>
+		<h2 class='tight'>Share!</h2>
+		Challenge your friends.
+	</a>
+
 	<div class='large-button left' id='btn-play-bottom'>
 		<h2 class='tight'>Play!</h2>
-		Start the game with your custom settings
+		Start the game with your custom settings.
 	</div>
 	<div class='large-button left' id='btn-exit'>
 		<h2 class='tight'>Back</h2>
@@ -345,6 +350,8 @@ function makeOutput() {
 
   // Save the data - so it can be retrieved when the puzzle page loads
   DATA.save('url-parm-string', parmString);
+
+  return parmString;
 }
 
 // --------------------------------------------------- [ Module: Form Reset ] -
@@ -446,6 +453,37 @@ function makeOutput() {
     if( navigator && navigator.app && navigator.app.backHistory ){
         navigator.app.backHistory();
     }
+  });
+})($);
+
+// -------------------------------------------------------- [ Module: Share ] -
+(function ($){
+  // NOTE: this MUST be registered on the 'click' event of a link.
+  // We change the href to a 'mailto:' url. We cannot use window.open
+  // because it is too unreliable (popup blockers); however, using the
+  // anchor's href seems to be pretty effective.
+  $('#btn-share-bottom').on('click',function(ev){
+    //ev.preventDefault();
+    var urlParms = makeOutput();
+    var emailBody = '';
+    emailBody += 'Hey,\n';
+    emailBody += '\n';
+    emailBody += 'I though you would enjoy this game:\n';
+    emailBody += '\n';
+    emailBody += 'http://ippo615.github.io/word-search/search/index.html?';
+    emailBody += urlParms;
+    emailBody += '\n\n';
+    emailBody += 'You can also get it in the app store:\n\n';
+    emailBody += 'https://play.google.com/store/apps/details?id=com.acipo.word_search';
+    emailBody += '\n\n';
+    emailBody += 'Enjoy!';
+    var mailTo = '';
+    mailTo += 'mailto:';
+    mailTo += '?to=';
+    mailTo += '&subject='+encodeURIComponent('Try this game!');
+    mailTo += '&body='+encodeURIComponent(emailBody);
+    // This must be registered on an anchor tag to word
+    this.href = mailTo;
   });
 })($);
 

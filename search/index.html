@@ -94,7 +94,7 @@
 		#word-list { display: inline-block; margin: 0; padding: 0; list-style-type: none; }
 		.word { list-style-type: none; float: left; }
 
-		.btn {font-size: 130%; margin: 0.5em; border: 4px solid #000; border-radius: 1em;}
+		.btn {font-size: 130%; margin: 0.5em; border: 4px solid #000; border-radius: 1em; display:block; color: #000; text-decoration: none;}
 
 		#btn-exit { }
 		#btn-hide {}
@@ -111,7 +111,9 @@
 </head>
 <body >
 
-	<div id='word-list-container'><div id='word-list'>
+	<div id='word-list-container'>
+ 	<a class='btn' id='btn-share' href='#' >Share</a>
+		<div id='word-list'>
 		<div class='word'>word123</div>
 		<div class='word'>word123</div>
 		<div class='word'>word123</div>
@@ -270,6 +272,10 @@
   var LETTER_HEIGHT = 0;
   // Where the puzzle data will be stored
   var PUZZLE = null;
+
+  // For sharing puzzles
+  var PUZZLE_SEED = RANDOM.getCurrent();
+  var PUZZLE_INDEX = 0;
 
   var MESSAGE_SHOW = 'Show';
   var MESSAGE_HIDE = 'Hide';
@@ -532,7 +538,7 @@
 
     self.scroll = function (ev) {
       // Prevent the browser's default scrolling
-      ev.gesture.preventDefault();
+      //ev.gesture.preventDefault();
 
       // When the event starts, recording the starting scroll position
       if(ev.type === 'touch') {
@@ -1204,7 +1210,8 @@
   function uiNewPuzzle() {
     IS_PUZZLE_COUNTED = 0;
     // PUZZLE = wspCreatePuzzle("hello are are are how are you doing today".split(' '), 8, 8, 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128, 10);
-
+    PUZZLE_SEED = RANDOM.getCurrent();
+    PUZZLE_INDEX = WORD_INDEX;
     PUZZLE = wspCreatePuzzle(WORD_LIST, WIDTH, HEIGHT, DIRECTIONS, MAX, nextWord);
     uiPuzzle.make(PUZZLE);
     uiWordList.make(PUZZLE);
@@ -1300,6 +1307,9 @@
 
     // Try to load URL parameters.
     if(gUrlParms !== null) {
+      if(gUrlParms.index){
+        WORD_INDEX = Math.abs(parseInt(gUrlParms.index, 10));
+      }
       if(gUrlParms.width) {
         WIDTH = parseInt(gUrlParms.width, 10);
         if(WIDTH < 5) {
@@ -1406,6 +1416,55 @@
     }
 
   }); // document.is.ready!
+
+  // For puzzle sharing
+  function getCurrentParms(){
+    var options = getUrlParmString();
+    if( options === '' ){
+      if(DATA.loadValid('use-custom-url', 0, DATA.int10) === 1) {
+        options = DATA.load('url-parm-string', options);
+      }
+    }
+    // remove the original seed/index and put our new one there
+    options = options.replace(/seed=\d+&?/g,'');
+    options = options.replace(/index=\d+&?/g,'');
+    options = options.replace(/&&/g,'&');
+    options = options.replace(/#/g,'');
+    options = options.replace(/\?/g,'');
+    options += '&seed='+PUZZLE_SEED;
+    options += '&index='+PUZZLE_INDEX;
+    return options;
+  }
+
+  // -------------------------------------------------------- [ Module: Share ] -
+  (function ($){
+    // NOTE: this MUST be registered on the 'click' event of a link.
+    // We change the href to a 'mailto:' url. We cannot use window.open
+    // because it is too unreliable (popup blockers); however, using the
+    // anchor's href seems to be pretty effective.
+    $('#btn-share').on('click',function(ev){
+      var urlParms = getCurrentParms();
+      var emailBody = '';
+      emailBody += 'Hey,\n';
+      emailBody += '\n';
+      emailBody += 'I though you would enjoy this game:\n';
+      emailBody += '\n';
+      emailBody += 'http://ippo615.github.io/word-search/search/index.html?';
+      emailBody += urlParms;
+      emailBody += '\n\n';
+      emailBody += 'You can also get it in the app store:\n\n';
+      emailBody += 'https://play.google.com/store/apps/details?id=com.acipo.word_search';
+      emailBody += '\n\n';
+      emailBody += 'Enjoy!';
+      var mailTo = '';
+      mailTo += 'mailto:';
+      mailTo += '?to=';
+      mailTo += '&subject='+encodeURIComponent('Try this game!');
+      mailTo += '&body='+encodeURIComponent(emailBody);
+      // This must be registered on an anchor tag to word
+      this.href = mailTo;
+    });
+  })($);
 
 })();
 
