@@ -95,6 +95,7 @@
 		.word { list-style-type: none; float: left; }
 
 		.btn {font-size: 130%; margin: 0.5em; border: 4px solid #000; border-radius: 1em; display:block; color: #000; text-decoration: none;}
+		.meaning { font-size: 50% }
 
 		#btn-exit { }
 		#btn-hide {}
@@ -106,6 +107,7 @@
 
 	<script type="text/javascript" src="../resources/lib/jquery.min.js"></script>
 	<script type="text/javascript" src="../resources/lib/hammer.min.js"></script>
+	<script type="text/javascript" src="../resources/lib/papaparse.min.js"></script>
 	<script type="text/javascript" src="../resources/lib/misc.js"></script>
 
 </head>
@@ -194,6 +196,9 @@
 <script type="text/javascript">
 // ----------------------------------------------- [ Module: Game ] -
 (function () {
+
+  // a global data structure for storing words
+  var globalWordData = {};
 
   // Persistant Data 
   var TOTAL_NUMBER_OF_WORDS_FOUND = DATA.loadValid('total-words-found', 0, DATA.int10);
@@ -534,7 +539,12 @@
     var START_SCROLL_X = 0;
     var START_SCROLL_Y = 0;
 
-    var self = {}
+    var self = {};
+	
+	function getWordForList( word ){
+		// Lookup a global thingy
+		return globalWordData[word].forWordList;
+	}
 
     self.scroll = function (ev) {
       // Prevent the browser's default scrolling
@@ -571,7 +581,7 @@
         htmlList += ID_WORD_PREFIX + i;
         htmlList += '"';
         htmlList += '>';
-        htmlList += words[i];
+        htmlList += getWordForList( words[i] );
         htmlList += '</div>';
       }
       $(ID_LIST).html(htmlList);
@@ -1412,7 +1422,28 @@
         }
       }
       // Load the list of words via get request (AJAX)
-      $.get('../resources/word-lists/' + list, onWordListLoad);
+	  function onCsvGet( fileContents ){
+		var rows = Papa.parse( fileContents, {
+			"header": true
+		});
+		console.info( rows );
+		// get all the furigana
+		var words = [];
+		for( var i=0, l=rows.data.length; i<l; i+=1 ){
+			var word = rows.data[i].furigana;
+			words.push( word );
+			globalWordData[word] = {
+				"forWordList": rows.data[i].kanji+' <span class="meaning">('+rows.data[i].meaning+')</span>'
+			};
+		}
+		
+		globalWordData[word].forWordList;
+		console.info( words );
+		console.info( words.join(' ') );
+		onWordListLoad( words.join(' ') );
+	  }
+      // $.get('../resources/word-lists/' + list, onWordListLoad);
+	  $.get('../resources/word-lists/' + 'japanese_n5.csv', onCsvGet);
     }
 
   }); // document.is.ready!
